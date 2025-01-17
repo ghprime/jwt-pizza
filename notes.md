@@ -6,21 +6,21 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 
 | User activity                                       | Frontend component | Backend endpoints | Database SQL |
 | --------------------------------------------------- | ------------------ | ----------------- | ------------ |
-| View home page                                      |                    |                   |              |
-| Register new user<br/>(t@jwt.com, pw: test)         |                    |                   |              |
-| Login new user<br/>(t@jwt.com, pw: test)            |                    |                   |              |
-| Order pizza                                         |                    |                   |              |
-| Verify pizza                                        |                    |                   |              |
-| View profile page                                   |                    |                   |              |
-| View franchise<br/>(as diner)                       |                    |                   |              |
-| Logout                                              |                    |                   |              |
-| View About page                                     |                    |                   |              |
-| View History page                                   |                    |                   |              |
-| Login as franchisee<br/>(f@jwt.com, pw: franchisee) |                    |                   |              |
-| View franchise<br/>(as franchisee)                  |                    |                   |              |
-| Create a store                                      |                    |                   |              |
-| Close a store                                       |                    |                   |              |
-| Login as admin<br/>(a@jwt.com, pw: admin)           |                    |                   |              |
-| View Admin page                                     |                    |                   |              |
-| Create a franchise for t@jwt.com                    |                    |                   |              |
-| Close the franchise for t@jwt.com                   |                    |                   |              |
+| View home page                                      |      home.jsx      |       none        |     none     |
+| Register new user<br/>(t@jwt.com, pw: test)         |    register.jsx    |[OPTIONS] /auth, [POST] /auth | INSERT INTO user (name, email, password) VALUES (?, ?, ?), INSERT INTO userRole (userId, role, objectId) VALUES (?, ?, ?), INSERT INTO auth (token, userId) VALUES (?, ?, ?) |
+| Login new user<br/>(t@jwt.com, pw: test)            |     login.jsx      |[OPTIONS] /auth, [PUT] /auth|SELECT * FROM user WHERE email=?, SELECT * FROM userRole WHERE userId=?|
+| Order pizza                                         |     menu.jsx       |[OPTIONS] /order/menu, [GET] /order/menu, [OPTIONS] /franchise, [GET] /franchise|SELECT userId FROM auth WHERE token=?, SELECT * FROM menu, SELECT userId FROM auth WHERE token=?, SELECT id, name FROM franchise, SELECT id, name FROM store WHERE franchiseId=?, SELECT id, name FROM store WHERE franchiseId=?, SELECT id, name FROM store WHERE franchiseId=?|
+| Verify pizza                                        | delivery.jsx |[POST] /order/menu/verify |    none     |
+| View profile page                                   | dinerDashboard.jsx |[OPTIONS] /order, [GET] /order|SELECT userId FROM auth WHERE token=?, SELECT id, franchiseId, storeId, date FROM dinerOrder WHERE dinerId=? LIMIT 0,10|
+| View franchise<br/>(as diner)                       |franchiseDashboard.jsx|[OPTIONS] /franchise/:id, [GET] /franchise/:id|SELECT userId FROM auth WHERE token=?, SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?|
+| Logout                                              |    logout.jsx      |[OPTIONS] /auth, [DELETE] /auth| SELECT userId FROM auth WHERE token=?, DELETE FROM auth WHERE token=? |
+| View About page                                     |    about.jsx       |    none           |   none       |
+| View History page                                   |     history.jsx    |     none          |     none     |
+| Login as franchisee<br/>(f@jwt.com, pw: franchisee) |     login.jsx      |[OPTIONS] /auth, [PUT] /auth|SELECT * FROM user WHERE email=?, SELECT * FROM userRole WHERE userId=?, INSERT INTO auth (token, userId) VALUES (?, ?)|
+| View franchise<br/>(as franchisee)                  |franchiseDashboard.jsx|[OPTIONS] /franchise/:id, [GET] /franchise:id|SELECT objectId FROM userRole WHERE role='franchisee' AND userId=?, SELECT id, name FROM franchise WHERE id in (3), SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee', SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id|
+| Create a store                                      |    createStore.jsx |[OPTIONS] /franchise/:id/store, [POST] /franchise/:id/store|SELECT userId FROM auth WHERE token=?, SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee', SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id, INSERT INTO store (franchiseId, name) VALUES (?, ?)|
+| Close a store                                       | closeStore.jsx  | [OPTIONS] /franchise/:id/store/:id, [DELETE] /franchise/:id/store/:id   |SELECT userId FROM auth WHERE token=?, SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee', SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id|
+| Login as admin<br/>(a@jwt.com, pw: admin)           | login.jsx |  [OPTIONS] /auth, [PUT] /auth |SELECT * FROM user WHERE email=?, SELECT * FROM userRole WHERE userId=?, INSERT INTO auth (token, userId) VALUES (?, ?)|
+| View Admin page                                     |  adminDashboard.jsx|[OPTIONS] /franchise, [GET] /franchise|SELECT userId FROM auth WHERE token=?, SELECT id, name FROM franchise|
+| Create a franchise for t@jwt.com                    | createFranchise.jsx|[POST] /franchise, [GET] /franchise  |SELECT id, name FROM user WHERE email=?, INSERT INTO franchise (name) VALUES (?), INSERT INTO userRole (userId, role, objectId) VALUES (?, ?, ?), SELECT userId FROM auth WHERE token=?, SELECT id, name FROM franchise, SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee', SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id|
+| Close the franchise for t@jwt.com                   |   closeFranchise.jsx   |[OPTIONS] /franchise/:id, [DELETE] /franchise/:id, [OPTIONS] /franchise, [GET], /franchise|SELECT userId FROM auth WHERE token=?, DELETE FROM store WHERE franchiseId=?, DELETE FROM userRole WHERE objectId=?, DELETE FROM franchise WHERE id=?, SELECT userId FROM auth WHERE token=?, SELECT id, name FROM franchise|
