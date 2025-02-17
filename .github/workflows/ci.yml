@@ -12,6 +12,9 @@ jobs:
     outputs:
       version: ${{ steps.set_version.outputs.version }}
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -28,9 +31,6 @@ jobs:
         run: |
           npm ci && npm run build
           cp dist/index.html dist/404.html
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Run tests
         run: |
