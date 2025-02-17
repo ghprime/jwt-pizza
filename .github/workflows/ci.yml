@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -43,10 +43,10 @@ jobs:
           color=$(echo "$coverage < 80" | bc -l | awk '{if ($1) print "red"; else print "green"}')
           curl -s -X POST "https://badge.cs329.click/badge/${{ github.repository_owner }}/jwtpizzacoverage?label=Coverage&value=$coverage%25&color=$color" -H "authorization: bearer ${{ secrets.FACTORY_API_KEY }}" -o /dev/null
 
-          - name: Update pages artifact
-          uses: actions/upload-pages-artifact@v3
-          with:
-            path: dist/
+      - name: Update pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
   
   deploy:
     needs: build
