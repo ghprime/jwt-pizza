@@ -85,7 +85,7 @@ export default function App() {
     { title: 'Register', to: '/:subPath?/register', component: <Register setUser={setUser} />, constraints: [loggedOut], display: ['nav'] },
     { title: 'Logout', to: '/:subPath?/logout', component: <Logout setUser={setUser} />, constraints: [loggedIn], display: ['nav'] },
     { title: 'Docs', to: '/docs/:docType?', component: <Docs />, display: [] },
-    { title: 'Opps', to: '*', component: <NotFound />, display: [] },
+    { title: 'Oops', to: '*', component: <NotFound />, display: [] },
   ];
 
   return (
