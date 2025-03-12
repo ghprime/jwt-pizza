@@ -20,11 +20,12 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: set version
+      - name: Set version
         id: set_version
         run: |
           version=$(date +'%Y%m%d.%H%M%S')
           echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version=$version"
           printf '{"version": "%s" }' "$version" > public/version.json
 
       - name: Build
@@ -47,6 +48,8 @@ jobs:
         with:
           name: package
           path: dist/
+
+
   deploy:
     needs: build
     permissions:
