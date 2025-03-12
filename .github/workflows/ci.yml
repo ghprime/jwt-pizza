@@ -54,6 +54,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       version: ${{needs.build.outputs.version}}
+    environment:
+      name: production
+      url: https://pizza.ghprime.click
     steps:
       - name: Create OIDC token to AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -71,5 +74,5 @@ jobs:
       - name: Push to AWS S3
         run: |
           echo Deploying $version
-          aws s3 cp dist s3://${{ secrets.APP_BUCKET }} --recursive
+          aws s3 cp dist s3://${{ secrets.APP_BUCKET }}/$version --recursive
           aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
