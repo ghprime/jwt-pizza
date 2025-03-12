@@ -53,7 +53,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     env:
-      version: ${{needs.build.outputs.version}}
+      version: ${{ github.event.inputs.version }}
     environment:
       name: production
       url: https://pizza.ghprime.click
@@ -74,5 +74,5 @@ jobs:
       - name: Push to AWS S3
         run: |
           echo Deploying $version
-          aws s3 cp dist s3://${{ secrets.APP_BUCKET }}/$version --recursive
+          aws s3 cp dist s3://${{ secrets.APP_BUCKET }} --recursive
           aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
