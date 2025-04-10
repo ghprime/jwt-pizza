@@ -78,3 +78,8 @@ I rewrote the whole thing in TypeScript, and when I did, I corrected this. I fix
   - ✅ Username → Yes  
   - ❌ Prices → No  
 - Just because no one has hacked it yet doesn’t mean it’s secure.
+
+
+# FYI
+
+I also did this with Benjamin Brittain, but I did it second with him so thats why this primary one is with Ben
