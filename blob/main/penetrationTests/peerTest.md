@@ -82,4 +82,4 @@ I rewrote the whole thing in TypeScript, and when I did, I corrected this. I fix
 
 # FYI
 
-I also did this with Benjamin Brittain, but I did it second with him so thats why this primary one is with Ben
+I also did this with Benjamin Brittain, but I did it second with him so thats why this primary one is with Josh
